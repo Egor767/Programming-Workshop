@@ -25,6 +25,7 @@ public class LoginPage: Page{
     {
         return _page.Locator(ErrorMessage);
     }
+    
     public ILocator GetTitle()
     {
         return _page.Locator(Title);

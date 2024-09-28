@@ -7,12 +7,6 @@ namespace PlaywrightTests;
 public class CartPage: Page{
     public CartPage(IPage page): base(page) {}
 
-    public async Task Authorization()
-    {
-        await _page.Locator(Username).FillAsync("standard_user");
-        await _page.Locator(Password).FillAsync("secret_sauce");
-        await _page.Locator(LoginButton).ClickAsync();
-    }
     public async Task AddSingleProductToCart()
     {
         await _page.Locator(AddToCartProduct).ClickAsync();
@@ -37,7 +31,11 @@ public class CartPage: Page{
     {
         await _page.Locator(PostalCodeCart).FillAsync(PostalCode);
     }
-    public async Task FinishOrder()
+    public async Task ClickContinueButton()
+    {
+        await _page.Locator(ContinueButton).ClickAsync();
+    }
+    public async Task ClickFinishButton()
     {
         await _page.Locator(FinishButton).ClickAsync();
     }

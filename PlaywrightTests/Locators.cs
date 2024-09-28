@@ -7,8 +7,9 @@ public static class Locators{
     public static string ErrorMessage = "[data-test=\"error\"]";
     public static string LockedOutErrorMessage = "[data-test=\"error-button\"]";
     public static string Title = "[data-test=\"title\"]";
-    public static string SortContainer = "[data-test=\"product_sort_container\"]";
+    public static string SortContainer = "[data-test=\"product-sort-container\"]";
     public static string InventoryList = "[data-test=\"inventory-list\"]";
+    public static string ProductName = "[data-test=\"inventory_item_name\"]"; 
     public static string AddToCartProduct = "[data-test=\"add-to-cart-sauce-labs-backpack\"]";
     public static string CartCounter = "[data-test=\"shopping-cart-badge\"]";
     public static string RemoveProduct = "[data-test=\"remove-sauce-labs-backpack\"]";
@@ -17,6 +18,8 @@ public static class Locators{
     public static string FirstNameCart = "[data-test=\"firstName\"]";
     public static string LastNameCart = "[data-test=\"lastName\"]";
     public static string PostalCodeCart = "[data-test=\"postalCode\"]";
+    public static string ContinueButton = "[data-test=\"continue\"]";
     public static string FinishButton = "[data-test=\"finish\"]";
+    public static string CartList = "[data-test=\"cart-list\"]";
 }
 

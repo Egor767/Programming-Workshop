@@ -1,5 +1,9 @@
+using System.Net.Security;
+using System.Security.Authentication;
+using Microsoft.Playwright;
 using Microsoft.Playwright.MSTest;
 using static Microsoft.Playwright.PlaywrightException;
+using static PlaywrightTests.Locators;
 
 
 namespace PlaywrightTests;
@@ -33,7 +37,22 @@ public class ShopPageTests: PageTest
         await _shopPage.Authorization();
         await _shopPage.AddSingleProductToCart();
         await _shopPage.RemoveProductFromCart();
+        await _shopPage.GoToCart();
+        var len = await _shopPage.GetCartCount();
 
-        //await Assert.ThrowsExceptionAsync<Microsoft.Playwright.PlaywrightException>(async () => await _shopPage.GetCartCounter());
+        Assert.IsTrue(len == 1);
+    }
+
+    [TestMethod]
+    public async Task SuccsessfulSortingByNames()
+    {
+        await _shopPage.GotoAsync();
+        await _shopPage.Authorization();
+        await _shopPage.SortingProducts(type: "az");
+        var sortingList = await _shopPage.GetNamesOfProducts();
+        var expectedList = sortingList.OrderByDescending(x => x);
+
+        Assert.IsTrue(expectedList.SequenceEqual(sortingList));
     }
 }
+
