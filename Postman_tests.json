@@ -1,0 +1,809 @@
+{
+	"info": {
+		"_postman_id": "741835d2-e0df-4c6f-a7b6-d7be3ac2cdd3",
+		"name": "Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "38919726"
+	},
+	"item": [
+		{
+			"name": "Authorization",
+			"item": [
+				{
+					"name": "auth",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"username\", \"admin\")\r",
+									"pm.environment.set(\"password\", \"password123\")"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = JSON.parse(pm.response.text());\r",
+									"const currToken = response.token\r",
+									"pm.environment.set(\"token\", currToken)\r",
+									"\r",
+									"\r",
+									"pm.test(\"Status 200 response\", function () {\r",
+									"  pm.response.to.have.status(200)\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Correct token has been written\", function() {\r",
+									"    pm.expect(pm.environment.token == currToken)\r",
+									"})\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\" : \"aaa\",\r\n    \"password\" : \"{{password}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/auth"
+					},
+					"response": []
+				},
+				{
+					"name": "badAuth",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = JSON.parse(pm.response.text());\r",
+									"\r",
+									"pm.test(\"Status 200 response\", function () {\r",
+									"  pm.response.to.have.status(200)\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response reason is Bad Credentials\", function () {\r",
+									"  pm.expect(response.reason == \"Bad Credentials\")\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\" : \"{{username}}\",\r\n    \"password\" : \"{{fakePassword}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/auth"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "AddBooking",
+			"item": [
+				{
+					"name": "correctReservation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = JSON.parse(pm.response.text());\r",
+									"const bookingid = response.bookingid\r",
+									"const booking = response.booking\r",
+									"\r",
+									"pm.test(\"Response have not null bookingid\", function () {\r",
+									"    pm.expect(bookingid).to.not.null\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Status 200 response\", function () {\r",
+									"  pm.response.to.have.status(200)\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Correct First Name\", function () {\r",
+									"    pm.expect(booking.firstname == pm.environment.fName)\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Correct Last Name\", function () {\r",
+									"    pm.expect(booking.lastname == pm.environment.lName)\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Correct total price\", function () {\r",
+									"    pm.expect(booking.totalprice == pm.environment.totalPrice)\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Correct deposit paid\", function () {\r",
+									"    pm.expect(booking.depositpaid == pm.environment.depositPaid)\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Correct checkIn data\", function () {\r",
+									"    pm.expect(booking.bookingdates.checkin == pm.environment.checkIn)\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Correct checkOut data\", function () {\r",
+									"    pm.expect(booking.bookingdates.checkout == pm.environment.checkOut)\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Correct additionalneeds\", function () {\r",
+									"    pm.expect(booking.additionalneeds == pm.environment.additionalNeeds)\r",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"{{fName}}\",\r\n    \"lastname\": \"{{lName}}\",\r\n    \"totalprice\": {{totalPrice}},\r\n    \"depositpaid\": {{depositPaid}},\r\n    \"bookingdates\": {\r\n        \"checkin\": \"{{checkIn}}\",\r\n        \"checkout\": \"{{checkOut}}\"\r\n    },\r\n    \"additionalneeds\": \"{{additionalNeeds}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/booking"
+					},
+					"response": []
+				},
+				{
+					"name": "incorrectReservation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 400 response\", function () {\r",
+									"  pm.response.to.have.status(400)\r",
+									"});\r",
+									"\r",
+									"pm.environment.set(\"depositPaid\", true)"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"depositPaid\", \"makaka\")"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"{{fName}}\",\r\n    \"lastname\": \"{{lName}}\",\r\n    \"totalprice\": {{totalPrice}},\r\n    \"depositpaid\": {{depositPaid}},\r\n    \"bookingdates\": {\r\n        \"checkin\": \"{{checkIn}}\",\r\n        \"checkout\": \"{{checkOut}}\"\r\n    },\r\n    \"additionalneeds\": \"{{additionalNeeds}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/booking"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "GetBookings",
+			"item": [
+				{
+					"name": "correctGetAll",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = JSON.parse(pm.response.text());\r",
+									"const correctId = pm.environment.get(\"lastId\");\r",
+									"\r",
+									"pm.test(\"Status 200 response\", function () {\r",
+									"  pm.response.to.have.status(200)\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Not Null Response\", function () {\r",
+									"    pm.expect(response).to.not.null\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Response have added request\", function () {\r",
+									"    pm.expect(response.correctId).to.not.null\r",
+									"})\r",
+									"\r",
+									"const del = {\r",
+									"  url: `https://restful-booker.herokuapp.com/booking${pm.environment.get(\"lastId\")}`,\r",
+									"  method: 'DELETE',\r",
+									"  header: {\r",
+									"    'Content-Type': 'application/json',\r",
+									"    'X-Foo': 'bar'}\r",
+									"}\r",
+									"\r",
+									"pm.sendRequest(del);\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const preRequest = {\r",
+									"  url: `https://restful-booker.herokuapp.com/booking`,\r",
+									"  method: 'POST',\r",
+									"  header: {\r",
+									"    'Content-Type': 'application/json',\r",
+									"    'X-Foo': 'bar'\r",
+									"  },\r",
+									"  body: {\r",
+									"    mode: 'raw',\r",
+									"    raw: JSON.stringify({\r",
+									"        \"firstname\": pm.environment.get(\"fName\"),\r",
+									"        \"lastname\": pm.environment.get(\"lName\"),\r",
+									"        \"totalprice\": pm.environment.get(\"totalPrice\"),\r",
+									"        \"depositpaid\": pm.environment.get(\"depositPaid\"),\r",
+									"        \"bookingdates\": {\r",
+									"            \"checkin\": pm.environment.get(\"checkIn\"),\r",
+									"            \"checkout\": pm.environment.get(\"checkOut\")\r",
+									"        },\r",
+									"        \"additionalneeds\": pm.environment.get(\"additionalNeeds\")\r",
+									"        })\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"pm.sendRequest(preRequest, function (err, res) {\r",
+									"    pm.environment.set(\"lastId\", res.json().bookingid)\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/booking"
+					},
+					"response": []
+				},
+				{
+					"name": "incorrectGetAll",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 404 response\", function () {\r",
+									"  pm.response.to.have.status(404)\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseUrl}}/booking/{{fakeId}}"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "DelBooking",
+			"item": [
+				{
+					"name": "correctDel",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const preRequest = {\r",
+									"  url: `https://restful-booker.herokuapp.com/booking`,\r",
+									"  method: 'POST',\r",
+									"  header: {\r",
+									"    'Content-Type': 'application/json',\r",
+									"    'X-Foo': 'bar'\r",
+									"  },\r",
+									"  body: {\r",
+									"    mode: 'raw',\r",
+									"    raw: JSON.stringify({\r",
+									"        \"firstname\": pm.environment.get(\"fName\"),\r",
+									"        \"lastname\": pm.environment.get(\"lName\"),\r",
+									"        \"totalprice\": pm.environment.get(\"totalPrice\"),\r",
+									"        \"depositpaid\": pm.environment.get(\"depositPaid\"),\r",
+									"        \"bookingdates\": {\r",
+									"            \"checkin\": pm.environment.get(\"checkIn\"),\r",
+									"            \"checkout\": pm.environment.get(\"checkOut\")\r",
+									"        },\r",
+									"        \"additionalneeds\": pm.environment.get(\"additionalNeeds\")\r",
+									"        })\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"pm.sendRequest(preRequest, function (err, res) {\r",
+									"    pm.environment.set(\"lastId\", res.json().bookingid)\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const get = {\r",
+									"  url: `https://restful-booker.herokuapp.com/booking${pm.environment.get(\"lastId\")}`,\r",
+									"  method: 'GET',\r",
+									"  header: {\r",
+									"    'Content-Type': 'application/json',\r",
+									"    'X-Foo': 'bar'}\r",
+									"}\r",
+									"\r",
+									"pm.sendRequest(get, function (err, res) {\r",
+									"    pm.test(\"Cant get deleted obj\", function () {\r",
+									"        pm.expect(res.code == \"404\")\r",
+									"    })\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Status 201 response\", function () {\r",
+									"  pm.response.to.have.status(201)\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "token={{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/booking/{{lastId}}"
+					},
+					"response": []
+				},
+				{
+					"name": "incorrectDel",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Cant delete non-existent id\", function () {\r",
+									"    pm.expect(pm.response.to.have.status(405))\r",
+									"})\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "token={{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/booking/{{fakeId}}"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "PatchBooking",
+			"item": [
+				{
+					"name": "correctPatch",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = JSON.parse(pm.response.text());\r",
+									"\r",
+									"pm.test(\"Status 200 response\", function () {\r",
+									"  pm.response.to.have.status(200)\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Correct First Name\", function() {\r",
+									"    pm.expect(response.firstname == pm.environment.get(\"newFName\"))\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Correct First Name\", function() {\r",
+									"    pm.expect(response.lastname == pm.environment.get(\"newLName\"))\r",
+									"})\r",
+									"\r",
+									"const del = {\r",
+									"  url: `https://restful-booker.herokuapp.com/booking${pm.environment.get(\"lastId\")}`,\r",
+									"  method: 'DELETE',\r",
+									"  header: {\r",
+									"    'Content-Type': 'application/json',\r",
+									"    'X-Foo': 'bar'}\r",
+									"}\r",
+									"\r",
+									"pm.sendRequest(del);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const preRequest = {\r",
+									"  url: `https://restful-booker.herokuapp.com/booking`,\r",
+									"  method: 'POST',\r",
+									"  header: {\r",
+									"    'Content-Type': 'application/json',\r",
+									"    'X-Foo': 'bar'\r",
+									"  },\r",
+									"  body: {\r",
+									"    mode: 'raw',\r",
+									"    raw: JSON.stringify({\r",
+									"        \"firstname\": pm.environment.get(\"fName\"),\r",
+									"        \"lastname\": pm.environment.get(\"lName\"),\r",
+									"        \"totalprice\": pm.environment.get(\"totalPrice\"),\r",
+									"        \"depositpaid\": pm.environment.get(\"depositPaid\"),\r",
+									"        \"bookingdates\": {\r",
+									"            \"checkin\": pm.environment.get(\"checkIn\"),\r",
+									"            \"checkout\": pm.environment.get(\"checkOut\")\r",
+									"        },\r",
+									"        \"additionalneeds\": pm.environment.get(\"additionalNeeds\")\r",
+									"        })\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"pm.sendRequest(preRequest, function (err, res) {\r",
+									"    pm.environment.set(\"lastId\", res.json().bookingid)\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "token={{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"{{newFName}}\",\r\n    \"lastname\": \"{{newLName}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/booking/{{lastId}}"
+					},
+					"response": []
+				},
+				{
+					"name": "incorrectPatch",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Cant update non-existent id\", function () {\r",
+									"    pm.response.to.have.status(405)\r",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "token={{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"{{newFName}}\",\r\n    \"lastname\": \"{{newLName}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/booking/{{fakeId}}"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "PutBooking",
+			"item": [
+				{
+					"name": "correctPut",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = JSON.parse(pm.response.text());\r",
+									"\r",
+									"pm.test(\"Status 200 response\", function () {\r",
+									"  pm.response.to.have.status(200)\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Correct First Name\", function () {\r",
+									"    pm.expect(response.firstname == pm.environment.get(\"newFName\"))\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Correct Last Name\", function () {\r",
+									"    pm.expect(response.lastname == pm.environment.get(\"newLName\"))\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Correct Total Price\", function () {\r",
+									"    pm.expect(response.totalprice == pm.environment.get(\"newTotalPrice\"))\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Correct Deposit Paid\", function () {\r",
+									"    pm.expect(response.depositpaid == pm.environment.get(\"newDepositPaid\"))\r",
+									"})\r",
+									"\r",
+									"const del = {\r",
+									"  url: `https://restful-booker.herokuapp.com/booking${pm.environment.get(\"lastId\")}`,\r",
+									"  method: 'DELETE',\r",
+									"  header: {\r",
+									"    'Content-Type': 'application/json',\r",
+									"    'X-Foo': 'bar'}\r",
+									"}\r",
+									"\r",
+									"pm.sendRequest(del);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const preRequest = {\r",
+									"  url: `https://restful-booker.herokuapp.com/booking`,\r",
+									"  method: 'POST',\r",
+									"  header: {\r",
+									"    'Content-Type': 'application/json',\r",
+									"    'X-Foo': 'bar'\r",
+									"  },\r",
+									"  body: {\r",
+									"    mode: 'raw',\r",
+									"    raw: JSON.stringify({\r",
+									"        \"firstname\": pm.environment.get(\"fName\"),\r",
+									"        \"lastname\": pm.environment.get(\"lName\"),\r",
+									"        \"totalprice\": pm.environment.get(\"totalPrice\"),\r",
+									"        \"depositpaid\": pm.environment.get(\"depositPaid\"),\r",
+									"        \"bookingdates\": {\r",
+									"            \"checkin\": pm.environment.get(\"checkIn\"),\r",
+									"            \"checkout\": pm.environment.get(\"checkOut\")\r",
+									"        },\r",
+									"        \"additionalneeds\": pm.environment.get(\"additionalNeeds\")\r",
+									"        })\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"pm.sendRequest(preRequest, function (err, res) {\r",
+									"    pm.environment.set(\"lastId\", res.json().bookingid)\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "token={{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"{{newFName}}\",\r\n    \"lastname\": \"{{newFName}}\",\r\n    \"totalprice\": {{newTotalPrice}},\r\n    \"depositpaid\": {{newDepositPaid}},\r\n    \"bookingdates\": {\r\n        \"checkin\": \"{{checkIn}}\",\r\n        \"checkout\": \"{{checkOut}}\"\r\n    },\r\n    \"additionalneeds\": \"{{additionalNeeds}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/booking/{{lastId}}"
+					},
+					"response": []
+				},
+				{
+					"name": "incorrectPut",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 405 response\", function () {\r",
+									"  pm.response.to.have.status(405)\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "token={{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"{{newFName}}\",\r\n    \"lastname\": \"{{newFName}}\",\r\n    \"totalprice\": {{newTotalPrice}},\r\n    \"depositpaid\": {{newDepositPaid}},\r\n    \"bookingdates\": {\r\n        \"checkin\": \"{{checkIn}}\",\r\n        \"checkout\": \"{{checkOut}}\"\r\n    },\r\n    \"additionalneeds\": \"{{additionalNeeds}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/booking/{{fakeId}}"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
