@@ -29,29 +29,24 @@ public class AuthTest : PlaywrightTest
     [TestMethod]
     public async Task SuccesfullAuth()
     {
-        //create and send request
         var authRequest = new AuthRequest(_baseRequest);
 
         var data = new Dictionary<string, object>(){
             {"username", RequestsConstansts.username},
             {"password", RequestsConstansts.password}
         };
-
+        
         var response = await authRequest.Send(data);
         var jsonData = await response.TextAsync();
 
-        //check status code
         await Expect(response).ToBeOKAsync();
 
-        //schema validating
         var json = JObject.Parse(jsonData);
         Assert.IsTrue(json.IsValid(Schemas.auth));
 
-        //check content
         var jsonDocument = JsonDocument.Parse(jsonData);
         Assert.IsTrue(jsonDocument.RootElement.TryGetProperty("token", out var token));
-
-        //set token for next tests
+        
         Headers.SetToken(token.GetString());
     }
 
