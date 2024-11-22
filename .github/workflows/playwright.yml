@@ -13,6 +13,6 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: Build & Install
-      run: cd PlaywrightTests && dotnet build && dotnet tool install --global PowerShell
+      run: cd Playwright_API && dotnet build && dotnet tool install --global PowerShell
     - name: Run your tests
-      run: cd PlaywrightTests && dotnet test --logger "html;logfilename=testResults.html"
+      run: cd Playwright_API && dotnet test --logger "html;logfilename=testResults.html"
