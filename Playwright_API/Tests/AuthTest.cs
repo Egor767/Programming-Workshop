@@ -46,8 +46,6 @@ public class AuthTest : PlaywrightTest
 
         var jsonDocument = JsonDocument.Parse(jsonData);
         Assert.IsTrue(jsonDocument.RootElement.TryGetProperty("token", out var token));
-        
-        Headers.SetToken(token.GetString());
     }
 
     [TestCleanup]

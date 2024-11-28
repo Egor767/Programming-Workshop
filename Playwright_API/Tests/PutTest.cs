@@ -10,7 +10,7 @@ namespace PlaywrightTests;
 public class PutTest : PlaywrightTest
 {
     private IAPIRequestContext _baseRequest = null!;
-    private Dictionary<string, object> _data = new Dictionary<string, object>() { { "id", "" } };
+    private Dictionary<string, object> _data = new Dictionary<string, object>() { { "id", 0 } };
 
     [TestInitialize]
     public async Task SetUpAPITesting()
@@ -23,28 +23,46 @@ public class PutTest : PlaywrightTest
         _baseRequest = await Playwright.APIRequest.NewContextAsync(new()
         {
             BaseURL = RequestsConstansts.baseUrl,
-            ExtraHTTPHeaders = Headers.headers
+            ExtraHTTPHeaders = Headers.GetHeaders(await FillToken())
         });
+        await CreateBooking();
     }
 
-    [TestMethod]
-    public async Task SuccesfullCreate()
+    public async Task<string> FillToken()
+    {
+        var authRequest = new AuthRequest(await Playwright.APIRequest.NewContextAsync(new() {
+            BaseURL = RequestsConstansts.baseUrl
+        }));
+
+        var data = new Dictionary<string, object>(){
+            {"username", RequestsConstansts.username},
+            {"password", RequestsConstansts.password}
+        };
+
+        var response = await authRequest.Send(data);
+        
+        return await response.TextAsync();
+    }
+
+    public async Task CreateBooking()
     {
         var createBookingRqst = new CreateRequest(_baseRequest);
         var response = await createBookingRqst.Send(RequestsConstansts.booking);
         var jsonData = await response.TextAsync();
         var receivedJson = JsonDocument.Parse(jsonData);
 
-        await Expect(response).ToBeOKAsync();
+        receivedJson.RootElement.TryGetProperty("bookingid", out var bookingId);
+        _data["id"] = bookingId.GetInt32();
+    }
 
-        Assert.IsTrue(receivedJson.RootElement.TryGetProperty("bookingid", out var bookingId));
-    
+    [TestMethod]
+    public async Task SuccesfullCreate()
+    {
         var putRqst = new PutRequest(_baseRequest);
-        putRqst.ID = bookingId.GetInt32();
+        putRqst.ID = (int)_data["id"];
 
         var putResponse = await putRqst.Send(RequestsConstansts.updBooking);
         var jsonDataPut = await putResponse.TextAsync();
-        var receivedJsonPut = JsonDocument.Parse(jsonDataPut);
 
         await Expect(putResponse).ToBeOKAsync();
 
@@ -54,8 +72,6 @@ public class PutTest : PlaywrightTest
         var receivedJsonString = jsonDataPut.ToString();
         var sendedJsonString = JsonSerializer.Serialize(RequestsConstansts.updBooking);
         Assert.AreEqual(receivedJsonString, sendedJsonString);
-
-        _data["id"] = bookingId.GetInt32();
     }
 
     [TestCleanup]
