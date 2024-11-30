@@ -7,6 +7,7 @@ public static class RequestsConstansts{
     public static string baseUrl = "https://restful-booker.herokuapp.com";
     public static string username = "admin";
     public static string password = "password123";
+    public static int bookingID = -1;
     public static Dictionary<string, object> booking = new(){
         {"firstname", "Egor"},
         {"lastname", "Mumiyak"},
@@ -29,5 +30,6 @@ public static class RequestsConstansts{
         }},
         {"additionalneeds", "Water"}
     };
+    
 }
 
